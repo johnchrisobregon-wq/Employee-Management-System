@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EIMS - Employee Information Management System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f6fa;
+            color: #252525;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #111c68;
+            color: white;
+            padding: 22px 12px;
+        }
+
+        .brand {
+            font-size: 25px;
+            font-weight: bold;
+            padding: 12px 15px 35px;
+        }
+
+        .nav-btn {
+            width: 100%;
+            padding: 16px;
+            margin-bottom: 8px;
+            border: none;
+            border-radius: 14px;
+            background: transparent;
+            color: white;
+            text-align: left;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .nav-btn:hover,
+        .nav-btn.active {
+            background: #1765ef;
+        }
+
+        .main {
+            margin-left: 250px;
+            padding: 32px;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        h1 {
+            font-size: 29px;
+            font-weight: 400;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #777;
+            margin-top: 0;
+            font-size: 13px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.05);
+        }
+
+        .stat {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 10px 0 0;
+        }
+
+        .blue { color: #1765ef; }
+        .green { color: #16803c; }
+        .red { color: #dc2626; }
+        .orange { color: #ea7900; }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 25px 0;
+        }
+
+        input, select {
+            padding: 11px;
+            border: 1px solid #d4d8e1;
+            border-radius: 6px;
+            background: white;
+            font-size: 13px;
+            max-width: 100%;
+        }
+
+        .field {
+            margin-bottom: 14px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+        }
+
+        .btn {
+            border: none;
+            padding: 11px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #1765ef;
+            color: white;
+            font-size: 13px;
+            margin: 2px;
+        }
+
+        .btn:hover {
+            opacity: .85;
+        }
+
+        .yellow {
+            background: #eab308;
+            color: #222;
+        }
+
+        .danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .gray {
+            background: #64748b;
+            color: white;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            font-size: 13px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 14px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #edf0f6;
+            font-weight: 500;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 7px;
+            border: 1px solid #aaa;
+            font-size: 12px;
+        }
+
+        .present {
+            background: #d9f7d9;
+        }
+
+        .late {
+            background: #fff1a8;
+        }
+
+        .absent {
+            background: #ffd6d6;
+        }
+
+        .probationary {
+            background: #e4ddff;
+        }
+
+        .result {
+            white-space: pre-wrap;
+            color: #1758a5;
+            font-size: 13px;
+        }
+
+        /* SETTINGS */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 22px;
+            margin-top: 45px;
+            align-items: stretch;
+        }
+
+        .settings-card {
+            background: #f0efed;
+            border-radius: 18px;
+            padding: 22px;
+            min-width: 0;
+        }
+
+        .settings-card h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 0;
+        }
+
+        .settings-card p {
+            font-size: 12px;
+            color: #444;
+            margin: 20px 0;
+        }
+
+        .profile-avatar {
+            width: 66px;
+            height: 66px;
+            border: 4px solid #1765ef;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1765ef;
+            font-size: 40px;
+            margin: 25px auto 15px;
+        }
+
+        #profileDisplayName {
+            text-align: center;
+            margin-bottom: 3px;
+            font-size: 18px;
+            font-weight: 400;
+        }
+
+        #profileDisplayEmail {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        .settings-btn {
+            width: 100%;
+            padding: 9px;
+            border: 1px solid #9ab5df;
+            background: #dce8f8;
+            border-radius: 5px;
+            color: #333;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .settings-btn.danger {
+            background: #f5e3e3;
+            border-color: #d58d8d;
+            color: #722;
+        }
+
+        .text-btn {
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: #333;
+            font-size: 12px;
+            padding: 0;
+            text-align: left;
+        }
+
+        .setting-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            margin: 20px 0;
+            cursor: pointer;
+        }
+
+        .setting-option input {
+            width: auto;
+            margin: 0;
+        }
+
+        .theme-options {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0 25px;
+        }
+
+        .theme-btn {
+            width: 90px;
+            min-height: 58px;
+            background: #f5f5f5;
+            border: 1px solid #9ab5df;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #333;
+        }
+
+        body.dark-mode {
+            background: #182033;
+            color: #f5f5f5;
+        }
+
+        body.dark-mode .card,
+        body.dark-mode table {
+            background: #263149;
+            color: white;
+        }
+
+        body.dark-mode th {
+            background: #35415a;
+        }
+
+        body.dark-mode .settings-card {
+            background: #263149;
+        }
+
+        body.dark-mode .settings-card p,
+        body.dark-mode .text-btn {
+            color: #eee;
+        }
+
+        body.compact .card,
+        body.compact .settings-card {
+            padding: 12px;
+        }
+
+        @media(max-width: 1050px) {
+            .settings-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .cards {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media(max-width: 700px) {
+            .sidebar {
+                width: 125px;
+                padding: 10px 5px;
+            }
+
+            .brand {
+                font-size: 19px;
+                padding: 12px 6px 25px;
+            }
+
+            .nav-btn {
+                padding: 12px 7px;
+                font-size: 12px;
+            }
+
+            .main {
+                margin-left: 125px;
+                padding: 15px;
+            }
+
+            .settings-grid,
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="brand">◉ EIMS</div>
+
+    <button class="nav-btn active"
+        onclick="showScreen('dashboard', this)">▦ Dashboard</button>
+
+    <button class="nav-btn"
+        onclick="showScreen('employees', this)">♟ Employees</button>
+
+    <button class="nav-btn"
+        onclick="showScreen('attendance', this)">▣ Attendance</button>
+
+    <button class="nav-btn"
+        onclick="showScreen('settings', this)">⚙ Settings</button>
+</div>
+
+<div class="main">
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="screen active">
+        <h1 id="welcomeHeading">Good Morning, Kara</h1>
+        <p class="subtitle">Here's what's happening with your workforce today.</p>
+
+        <div class="cards">
+            <div class="card">
+                <span class="blue">▣ Total Employees</span>
+                <p class="stat" id="totalEmployees">0</p>
+            </div>
+
+            <div class="card">
+                <span class="green">✓ Present Today</span>
+                <p class="stat" id="presentToday">0</p>
+            </div>
+
+            <div class="card">
+                <span class="red">× Absent Today</span>
+                <p class="stat" id="absentToday">0</p>
+            </div>
+
+            <div class="card">
+                <span class="orange">◷ Late Today</span>
+                <p class="stat" id="lateToday">0</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Overview</h2>
+            <p id="dashboardOutput">Welcome to EIMS.</p>
+            <button class="btn" onclick="loadDashboard()">Refresh Dashboard</button>
+        </div>
+
+        <div class="card">
+            <h3>Recent Activities</h3>
+            <div id="recentActivities">No activities yet.</div>
+        </div>
+    </section>
+
+    <!-- EMPLOYEES -->
+    <section id="employees" class="screen">
+        <h1>Employee Information</h1>
+        <p class="subtitle">Manage employee information, roles, and employment status.</p>
+
+        <div class="toolbar">
+            <button class="btn" onclick="clearEmployeeForm()">+ Add New</button>
+            <button class="btn yellow" onclick="updateEmployee()">✎ Update Selected</button>
+            <button class="btn danger" onclick="deleteSelectedEmployee()">▣ Delete Selected</button>
+        </div>
+
+        <div class="card">
+            <h2>Employee Form</h2>
+
+            <div class="field">
+                <label>Employee ID</label>
+                <input type="text" id="empId" placeholder="BR001">
+            </div>
+
+            <div class="field">
+                <label>Employee Name</label>
+                <input type="text" id="empName" placeholder="Enter full name">
+            </div>
+
+            <div class="field">
+                <label>Department</label>
+                <input type="text" id="empDepartment" placeholder="Enter department">
+            </div>
+
+            <div class="field">
+                <label>Position</label>
+                <input type="text" id="empPosition" placeholder="Enter position">
+            </div>
+
+            <div class="field">
+                <label>Employment Status</label>
+                <select id="empStatus">
+                    <option>Regular</option>
+                    <option>Probationary</option>
+                    <option>Contractual</option>
+                    <option>On Leave</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Salary Category</label>
+                <select id="empSalary">
+                    <option>Monthly</option>
+                    <option>Daily</option>
+                    <option>Hourly</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Email Address</label>
+                <input type="email" id="empEmail" placeholder="employee@email.com">
+            </div>
+
+            <div class="field">
+                <label>Contact Number</label>
+                <input type="text" id="empPhone" placeholder="09XXXXXXXXX">
+            </div>
+
+            <button class="btn" onclick="addEmployee()">Save Employee</button>
+            <button class="btn gray" onclick="clearEmployeeForm()">Clear Form</button>
+            <p id="employeeOutput" class="result"></p>
+        </div>
+
+        <div class="card">
+            <h2>People Directory</h2>
+
+            <input type="text" id="searchEmployee"
+                placeholder="Search employee..."
+                oninput="searchEmployees()">
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Employee ID</th>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Employment Status</th>
+                            <th>Contact Information</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeeTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ATTENDANCE -->
+    <section id="attendance" class="screen">
+        <h1>Attendance Management</h1>
+        <p class="subtitle">Monitor daily attendance and manage employee time records.</p>
+
+        <div class="cards">
+            <div class="card">
+                Total Employees
+                <p class="stat" id="attTotal">0</p>
+            </div>
+            <div class="card">
+                Present
+                <p class="stat green" id="attPresent">0</p>
+            </div>
+            <div class="card">
+                Late
+                <p class="stat orange" id="attLate">0</p>
+            </div>
+            <div class="card">
+                Absent
+                <p class="stat red" id="attAbsent">0</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Record Attendance</h2>
+
+            <div class="field">
+                <label>Date</label>
+                <input type="date" id="attDate">
+            </div>
+
+            <div class="field">
+                <label>Employee</label>
+                <select id="attEmployee"></select>
+            </div>
+
+            <div class="field">
+                <label>Time-In</label>
+                <input type="time" id="attTimeIn">
+            </div>
+
+            <div class="field">
+                <label>Time-Out</label>
+                <input type="time" id="attTimeOut">
+            </div>
+
+            <div class="field">
+                <label>Status</label>
+                <select id="attStatus">
+                    <option>Present</option>
+                    <option>Late</option>
+                    <option>Absent</option>
+                    <option>On Leave</option>
+                </select>
+            </div>
+
+            <button class="btn" onclick="saveAttendance()">Save Attendance</button>
+            <button class="btn yellow" onclick="timeIn()">Time-In Now</button>
+            <button class="btn gray" onclick="timeOut()">Time-Out Now</button>
+
+            <p id="attendanceOutput" class="result"></p>
+        </div>
+
+        <div class="card">
+            <h2>Attendance Records</h2>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Employee ID</th>
+                            <th>Date</th>
+                            <th>Time-In</th>
+                            <th>Time-Out</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- SETTINGS: MATCHED TO YOUR SCREENSHOT -->
+    <section id="settings" class="screen">
+        <h1>Settings</h1>
+        <p class="subtitle">Manage your account and system preference</p>
+
+        <div class="settings-grid">
+
+            <!-- PROFILE INFORMATION -->
+            <div class="settings-card">
+                <h3>♙ Profile Information</h3>
+
+                <div class="profile-avatar">●</div>
+                <h3 id="profileDisplayName">Kara Admin</h3>
+                <p id="profileDisplayEmail">admin@eims.com</p>
+
+                <button class="settings-btn" onclick="editProfile()">
+                    Edit Profile
+                </button>
+            </div>
+
+            <!-- ACCOUNT SECURITY -->
+            <div class="settings-card">
+                <h3>Account Security</h3>
+
+                <p>♙ <button class="text-btn" onclick="changePassword()">
+                    Change Password</button></p>
+
+                <p>♢ <button class="text-btn" onclick="toggleTwoFactor()">
+                    Two-Factor Authentication</button></p>
+
+                <p>▣ <button class="text-btn" onclick="activeSessions()">
+                    Active Sessions</button></p>
+
+                <button class="settings-btn danger" onclick="signOutDevices()">
+                    ⇥ Sign out of all devices
+                </button>
+            </div>
+
+            <!-- NOTIFICATIONS -->
+            <div class="settings-card">
+                <h3>♧ Notifications</h3>
+
+                <label class="setting-option">
+                    <input type="checkbox" id="emailNotifications" checked>
+                    Email notifications
+                </label>
+
+                <label class="setting-option">
+                    <input type="checkbox" id="attendanceAlerts" checked>
+                    Attendance alerts
+                </label>
+
+                <label class="setting-option">
+                    <input type="checkbox" id="weeklyReports">
+                    Weekly reports
+                </label>
+            </div>
+
+            <!-- APPEARANCE -->
+            <div class="settings-card">
+                <h3>⚙ Appearance</h3>
+                <p>Theme</p>
+
+                <div class="theme-options">
+                    <button class="theme-btn" onclick="setTheme('light')">
+                        ☼<br>Light Mode
+                    </button>
+
+                    <button class="theme-btn" onclick="setTheme('dark')">
+                        ☾<br>Dark Mode
+                    </button>
+                </div>
+
+                <label class="setting-option">
+                    <input type="checkbox" id="compactView"
+                        onchange="toggleCompactView()">
+                    Compact View
+                </label>
+            </div>
+
+            <!-- DATA AND PRIVACY -->
+            <div class="settings-card">
+                <h3>♢ Data &amp; Privacy</h3>
+
+                <p>
+                    <button class="text-btn" onclick="exportJSON()">
+                        ♧ Export data
+                    </button>
+                    <br>
+                    <small>Download your data in JSON format</small>
+                </p>
+
+                <p>
+                    <button class="text-btn" onclick="showPrivacyPolicy()">
+                        ▢ Privacy policy
+                    </button>
+                    <br>
+                    <small>View our privacy policy</small>
+                </p>
+
+                <button class="settings-btn danger" onclick="deleteAccount()">
+                    ♧ Delete account
+                    <br>
+                    <small>Permanently remove your account</small>
+                </button>
+            </div>
+        </div>
+
+        <p id="settingsOutput" class="result"></p>
+    </section>
+
+</div>
+
+<script>
+    // JSON DATA STORED IN THE BROWSER
+    var employees = JSON.parse(localStorage.getItem("employees")) || [];
+    var attendance = JSON.parse(localStorage.getItem("attendance")) || [];
+
+    var profile = JSON.parse(localStorage.getItem("profile")) || {
+        name: "Kara Admin",
+        email: "admin@eims.com"
+    };
+
+    var selectedEmployeeId = "";
+
+    function saveData() {
+        localStorage.setItem("employees", JSON.stringify(employees));
+        localStorage.setItem("attendance", JSON.stringify(attendance));
+        localStorage.setItem("profile", JSON.stringify(profile));
+    }
+
+    function today() {
+        var d = new Date();
+
+        return d.getFullYear() + "-" +
+            String(d.getMonth() + 1).padStart(2, "0") + "-" +
+            String(d.getDate()).padStart(2, "0");
+    }
+
+    function escapeHTML(value) {
+        return String(value == null ? "" : value).replace(/[&<>"']/g, function(c) {
+            return {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            }[c];
+        });
+    }
+
+    function showScreen(screenName, button) {
+        document.querySelectorAll(".screen").forEach(function(screen) {
+            screen.classList.remove("active");
+        });
+
+        document.getElementById(screenName).classList.add("active");
+
+        document.querySelectorAll(".nav-btn").forEach(function(btn) {
+            btn.classList.remove("active");
+        });
+
+        button.classList.add("active");
+
+        if (screenName === "dashboard") loadDashboard();
+        if (screenName === "employees") loadEmployees();
+
+        if (screenName === "attendance") {
+            loadEmployeeOptions();
+            loadAttendance();
+        }
+
+        if (screenName === "settings") loadProfile();
+    }
+
+    // DASHBOARD
+    function loadDashboard() {
+        var date = today();
+        var records = attendance.filter(function(a) {
+            return a.date === date;
+        });
+
+        document.getElementById("totalEmployees").textContent = employees.length;
+
+        document.getElementById("presentToday").textContent =
+            records.filter(function(a) {
+                return a.status === "Present";
+            }).length;
+
+        document.getElementById("lateToday").textContent =
+            records.filter(function(a) {
+                return a.status === "Late";
+            }).length;
+
+        document.getElementById("absentToday").textContent =
+            employees.filter(function(e) {
+                return !records.some(function(a) {
+                    return a.employeeId === e.id &&
+                        ["Present", "Late", "On Leave"].includes(a.status);
+                });
+            }).length;
+
+        document.getElementById("dashboardOutput").textContent =
+            "Total employees: " + employees.length +
+            "\nAttendance records today: " + records.length;
+
+        var recent = attendance.slice(-5).reverse();
+        var output = "";
+
+        recent.forEach(function(a) {
+            var e = employees.find(function(emp) {
+                return emp.id === a.employeeId;
+            });
+
+            output += "<p>" + escapeHTML(e ? e.name : a.employeeId) +
+                " — " + escapeHTML(a.status) +
+                " (" + escapeHTML(a.date) + ")</p>";
+        });
+
+        document.getElementById("recentActivities").innerHTML =
+            output || "No activities yet.";
+
+        document.getElementById("welcomeHeading").textContent =
+            "Good Morning, " + profile.name;
+    }
+
+    // CREATE EMPLOYEE
+    function addEmployee() {
+        var id = document.getElementById("empId").value.trim();
+        var name = document.getElementById("empName").value.trim();
+        var department = document.getElementById("empDepartment").value.trim();
+        var position = document.getElementById("empPosition").value.trim();
+        var status = document.getElementById("empStatus").value;
+        var salary = document.getElementById("empSalary").value;
+        var email = document.getElementById("empEmail").value.trim();
+        var phone = document.getElementById("empPhone").value.trim();
+
+        if (!id || !name || !position) {
+            alert("Please enter Employee ID, Name, and Position.");
+            return;
+        }
+
+        if (employees.some(function(e) {
+            return e.id.toLowerCase() === id.toLowerCase();
+        })) {
+            alert("Employee ID already exists.");
+            return;
+        }
+
+        employees.push({
+            id: id,
+            name: name,
+            department: department,
+            position: position,
+            status: status,
+            salary: salary,
+            email: email,
+            phone: phone
+        });
+
+        saveData();
+        clearEmployeeForm();
+        loadEmployees();
+        loadDashboard();
+
+        document.getElementById("employeeOutput").textContent =
+            "Employee added successfully!";
+    }
+
+    // READ EMPLOYEES
+    function loadEmployees() {
+        var output = "";
+
+        employees.forEach(function(e) {
+            output += "<tr>" +
+                "<td>" + escapeHTML(e.id) + "</td>" +
+                "<td>" + escapeHTML(e.name) + "</td>" +
+                "<td>" + escapeHTML(e.position) + "</td>" +
+                "<td><span class='status " +
+                (e.status === "Regular" ? "present" :
+                e.status === "Probationary" ? "probationary" : "") +
+                "'>" + escapeHTML(e.status) + "</span></td>" +
+                "<td>" + escapeHTML(e.email) + "<br>" +
+                escapeHTML(e.phone) + "</td>" +
+                "<td><button class='btn yellow' onclick='editEmployee(" +
+                JSON.stringify(e.id) + ")'>Edit</button>" +
+                "<button class='btn danger' onclick='deleteEmployee(" +
+                JSON.stringify(e.id) + ")'>Delete</button></td>" +
+                "</tr>";
+        });
+
+        document.getElementById("employeeTable").innerHTML =
+            output || "<tr><td colspan='6'>No employees found.</td></tr>";
+
+        loadEmployeeOptions();
+    }
+
+    // SEARCH EMPLOYEES
+    function searchEmployees() {
+        var search = document.getElementById("searchEmployee")
+            .value.toLowerCase();
+
+        var filtered = employees.filter(function(e) {
+            return (e.id + " " + e.name + " " + e.position + " " +
+                e.department + " " + e.status).toLowerCase().includes(search);
+        });
+
+        var output = "";
+
+        filtered.forEach(function(e) {
+            output += "<tr>" +
+                "<td>" + escapeHTML(e.id) + "</td>" +
+                "<td>" + escapeHTML(e.name) + "</td>" +
+                "<td>" + escapeHTML(e.position) + "</td>" +
+                "<td>" + escapeHTML(e.status) + "</td>" +
+                "<td>" + escapeHTML(e.email) + "<br>" +
+                escapeHTML(e.phone) + "</td>" +
+                "<td><button class='btn yellow' onclick='editEmployee(" +
+                JSON.stringify(e.id) + ")'>Edit</button>" +
+                "<button class='btn danger' onclick='deleteEmployee(" +
+                JSON.stringify(e.id) + ")'>Delete</button></td>" +
+                "</tr>";
+        });
+
+        document.getElementById("employeeTable").innerHTML =
+            output || "<tr><td colspan='6'>No matching employees.</td></tr>";
+    }
+
+    function editEmployee(id) {
+        var e = employees.find(function(item) {
+            return item.id === id;
+        });
+
+        if (!e) return;
+
+        selectedEmployeeId = e.id;
+
+        document.getElementById("empId").value = e.id;
+        document.getElementById("empName").value = e.name;
+        document.getElementById("empDepartment").value = e.department;
+        document.getElementById("empPosition").value = e.position;
+        document.getElementById("empStatus").value = e.status;
+        document.getElementById("empSalary").value = e.salary;
+        document.getElementById("empEmail").value = e.email;
+        document.getElementById("empPhone").value = e.phone;
+
+        document.getElementById("employeeOutput").textContent =
+            "Editing " + e.name + ". Change the fields and click Update Selected.";
+
+        document.querySelectorAll(".nav-btn").forEach(function(btn) {
+            btn.classList.remove("active");
+        });
+
+        document.querySelectorAll(".screen").forEach(function(screen) {
+            screen.classList.remove("active");
+        });
+
+        document.getElementById("employees").classList.add("active");
+        document.querySelectorAll(".nav-btn")[1].classList.add("active");
+    }
+
+    function updateEmployee() {
+        if (!selectedEmployeeId) {
+            alert("Please click Edit on an employee first.");
+            return;
+        }
+
+        var e = employees.find(function(item) {
+            return item.id === selectedEmployeeId;
+        });
+
+        if (!e) return;
+
+        var name = document.getElementById("empName").value.trim();
+        var position = document.getElementById("empPosition").value.trim();
+
+        if (!name || !position) {
+            alert("Name and Position are required.");
+            return;
+        }
+
+        e.name = name;
+        e.department = document.getElementById("empDepartment").value.trim();
+        e.position = position;
+        e.status = document.getElementById("empStatus").value;
+        e.salary = document.getElementById("empSalary").value;
+        e.email = document.getElementById("empEmail").value.trim();
+        e.phone = document.getElementById("empPhone").value.trim();
+
+        saveData();
+        clearEmployeeForm();
+        loadEmployees();
+        loadDashboard();
+
+        document.getElementById("employeeOutput").textContent =
+            "Employee updated successfully!";
+    }
+
+    function deleteEmployee(id) {
+        if (!confirm("Are you sure you want to delete employee " + id + "?")) {
+            return;
+        }
+
+        employees = employees.filter(function(e) {
+            return e.id !== id;
+        });
+
+        attendance = attendance.filter(function(a) {
+            return a.employeeId !== id;
+        });
+
+        if (selectedEmployeeId === id) clearEmployeeForm();
+
+        saveData();
+        loadEmployees();
+        loadAttendance();
+        loadDashboard();
+
+        document.getElementById("employeeOutput").textContent =
+            "Employee deleted successfully.";
+    }
+
+    function deleteSelectedEmployee() {
+        if (!selectedEmployeeId) {
+            alert("Select an employee using the Edit button first.");
+            return;
+        }
+
+        deleteEmployee(selectedEmployeeId);
+    }
+
+    function clearEmployeeForm() {
+        ["empId", "empName", "empDepartment", "empPosition",
+         "empEmail", "empPhone"].forEach(function(id) {
+            document.getElementById(id).value = "";
+        });
+
+        document.getElementById("empStatus").value = "Regular";
+        document.getElementById("empSalary").value = "Monthly";
+
+        selectedEmployeeId = "";
+    }
+
+    // ATTENDANCE
+    function loadEmployeeOptions() {
+        var select = document.getElementById("attEmployee");
+        var previous = select.value;
+        var output = "";
+
+        employees.forEach(function(e) {
+            output += "<option value='" + escapeHTML(e.id) + "'>" +
+                escapeHTML(e.id + " - " + e.name) + "</option>";
+        });
+
+        select.innerHTML = output;
+
+        if (employees.some(function(e) {
+            return e.id === previous;
+        })) {
+            select.value = previous;
+        }
+    }
+
+    function saveAttendance() {
+        var employeeId = document.getElementById("attEmployee").value;
+        var date = document.getElementById("attDate").value || today();
+        var timeInValue = document.getElementById("attTimeIn").value;
+        var timeOutValue = document.getElementById("attTimeOut").value;
+        var status = document.getElementById("attStatus").value;
+
+        if (!employeeId) {
+            alert("Please add an employee first.");
+            return;
+        }
+
+        if (timeInValue && timeOutValue && timeOutValue < timeInValue) {
+            alert("Time-Out cannot be earlier than Time-In.");
+            return;
+        }
+
+        var record = attendance.find(function(a) {
+            return a.employeeId === employeeId && a.date === date;
+        });
+
+        if (record) {
+            record.timeIn = timeInValue;
+            record.timeOut = timeOutValue;
+            record.status = status;
+        } else {
+            attendance.push({
+                employeeId: employeeId,
+                date: date,
+                timeIn: timeInValue,
+                timeOut: timeOutValue,
+                status: status
+            });
+        }
+
+        saveData();
+        loadAttendance();
+        loadDashboard();
+
+        document.getElementById("attendanceOutput").textContent =
+            "Attendance saved successfully!";
+    }
+
+    function timeIn() {
+        if (!document.getElementById("attEmployee").value) {
+            alert("Please add an employee first.");
+            return;
+        }
+
+        document.getElementById("attDate").value = today();
+
+        var time = new Date().toTimeString().slice(0, 5);
+        document.getElementById("attTimeIn").value = time;
+
+        document.getElementById("attStatus").value =
+            time > "08:00" ? "Late" : "Present";
+
+        saveAttendance();
+    }
+
+    function timeOut() {
+        if (!document.getElementById("attTimeIn").value) {
+            alert("Please record Time-In first.");
+            return;
+        }
+
+        document.getElementById("attDate").value = today();
+        document.getElementById("attTimeOut").value =
+            new Date().toTimeString().slice(0, 5);
+
+        saveAttendance();
+    }
+
+    function loadAttendance() {
+        var output = "";
+        var date = document.getElementById("attDate").value || today();
+
+        attendance.forEach(function(a, index) {
+            output += "<tr>" +
+                "<td>" + escapeHTML(a.employeeId) + "</td>" +
+                "<td>" + escapeHTML(a.date) + "</td>" +
+                "<td>" + escapeHTML(a.timeIn || "-") + "</td>" +
+                "<td>" + escapeHTML(a.timeOut || "-") + "</td>" +
+                "<td>" + escapeHTML(a.status) + "</td>" +
+                "<td><button class='btn yellow' onclick='editAttendance(" +
+                index + ")'>Edit</button>" +
+                "<button class='btn danger' onclick='deleteAttendance(" +
+                index + ")'>Delete</button></td>" +
+                "</tr>";
+        });
+
+        document.getElementById("attendanceTable").innerHTML =
+            output || "<tr><td colspan='6'>No attendance records.</td></tr>";
+
+        var todaysRecords = attendance.filter(function(a) {
+            return a.date === date;
+        });
+
+        document.getElementById("attTotal").textContent = employees.length;
+        document.getElementById("attPresent").textContent =
+            todaysRecords.filter(function(a) {
+                return a.status === "Present";
+            }).length;
+        document.getElementById("attLate").textContent =
+            todaysRecords.filter(function(a) {
+                return a.status === "Late";
+            }).length;
+        document.getElementById("attAbsent").textContent =
+            todaysRecords.filter(function(a) {
+                return a.status === "Absent";
+            }).length;
+    }
+
+    function editAttendance(index) {
+        var a = attendance[index];
+        if (!a) return;
+
+        document.getElementById("attEmployee").value = a.employeeId;
+        document.getElementById("attDate").value = a.date;
+        document.getElementById("attTimeIn").value = a.timeIn;
+        document.getElementById("attTimeOut").value = a.timeOut;
+        document.getElementById("attStatus").value = a.status;
+
+        document.getElementById("attendanceOutput").textContent =
+            "Edit the selected record and click Save Attendance.";
+    }
+
+    function deleteAttendance(index) {
+        if (!confirm("Delete this attendance record?")) return;
+
+        attendance.splice(index, 1);
+
+        saveData();
+        loadAttendance();
+        loadDashboard();
+    }
+
+    // SETTINGS
+    function loadProfile() {
+        document.getElementById("profileDisplayName").textContent = profile.name;
+        document.getElementById("profileDisplayEmail").textContent = profile.email;
+
+        document.getElementById("welcomeHeading").textContent =
+            "Good Morning, " + profile.name;
+
+        var notifications = JSON.parse(
+            localStorage.getItem("eimsNotifications") || "{}"
+        );
+
+        document.getElementById("emailNotifications").checked =
+            notifications.email !== false;
+        document.getElementById("attendanceAlerts").checked =
+            notifications.attendance !== false;
+        document.getElementById("weeklyReports").checked =
+            notifications.weekly === true;
+    }
+
+    function editProfile() {
+        var name = prompt("Enter admin name:", profile.name);
+        if (name === null || !name.trim()) return;
+
+        var email = prompt("Enter admin email:", profile.email);
+        if (email === null || !email.trim()) return;
+
+        profile.name = name.trim();
+        profile.email = email.trim();
+
+        saveData();
+        loadProfile();
+        loadDashboard();
+
+        document.getElementById("settingsOutput").textContent =
+            "Profile updated successfully.";
+    }
+
+    function changePassword() {
+        alert("Password changing requires a secure login backend.");
+    }
+
+    function toggleTwoFactor() {
+        alert("Two-factor authentication requires server-side authentication.");
+    }
+
+    function activeSessions() {
+        alert("Active sessions require a secure login backend.");
+    }
+
+    function signOutDevices() {
+        alert("Signing out all devices requires a server-side session system.");
+    }
+
+    function saveNotifications() {
+        var notifications = {
+            email: document.getElementById("emailNotifications").checked,
+            attendance: document.getElementById("attendanceAlerts").checked,
+            weekly: document.getElementById("weeklyReports").checked
+        };
+
+        localStorage.setItem("eimsNotifications", JSON.stringify(notifications));
+
+        document.getElementById("settingsOutput").textContent =
+            "Notification preferences saved.";
+    }
+
+    function setTheme(theme) {
+        document.body.classList.toggle("dark-mode", theme === "dark");
+        localStorage.setItem("eimsTheme", theme);
+    }
+
+    function toggleCompactView() {
+        var compact = document.getElementById("compactView").checked;
+
+        document.body.classList.toggle("compact", compact);
+        localStorage.setItem("eimsCompactView", JSON.stringify(compact));
+    }
+
+    function showPrivacyPolicy() {
+        alert(
+            "Privacy Policy\n\n" +
+            "Only authorized users should access employee information. " +
+            "Protect personal data and do not share records without permission."
+        );
+    }
+
+    function deleteAccount() {
+        alert(
+            "Account deletion is not connected to a backend. " +
+            "No account has been deleted."
+        );
+    }
+
+    function exportJSON() {
+        var data = {
+            employees: employees,
+            attendance: attendance,
+            profile: profile
+        };
+
+        var blob = new Blob(
+            [JSON.stringify(data, null, 2)],
+            { type: "application/json" }
+        );
+
+        var url = URL.createObjectURL(blob);
+        var link = document.createElement("a");
+
+        link.href = url;
+        link.download = "eims-backup.json";
+        link.click();
+
+        URL.revokeObjectURL(url);
+
+        document.getElementById("settingsOutput").textContent =
+            "JSON backup downloaded.";
+    }
+
+    // INITIALIZE
+    ["emailNotifications", "attendanceAlerts", "weeklyReports"].forEach(
+        function(id) {
+            document.getElementById(id).addEventListener(
+                "change", saveNotifications
+            );
+        }
+    );
+
+    document.getElementById("attDate").value = today();
+
+    document.getElementById("attDate").addEventListener("change", loadAttendance);
+
+    document.body.classList.toggle(
+        "dark-mode",
+        localStorage.getItem("eimsTheme") === "dark"
+    );
+
+    var savedCompact = JSON.parse(
+        localStorage.getItem("eimsCompactView") || "false"
+    );
+
+    document.getElementById("compactView").checked = savedCompact;
+    document.body.classList.toggle("compact", savedCompact);
+
+    loadProfile();
+    loadEmployees();
+    loadEmployeeOptions();
+    loadAttendance();
+    loadDashboard();
+</script>
+
+</body>
+</html>
